@@ -1,8 +1,10 @@
 #SpanTextView
+
 days ago,i was learning groovy,when i meet "Template".i realize a old project may be brought to life again,
 that is it! I use template in this project like groovy's template.
 
 #Usage
+
 ```
         <com.hirayclay.SpanTextView
             android:id="@+id/span_textview"
