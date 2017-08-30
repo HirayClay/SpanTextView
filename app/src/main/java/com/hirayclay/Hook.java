@@ -20,7 +20,6 @@ import java.util.Map;
  *
  * @author CJJ
  */
-
 public class Hook {
     SpanTextView target;
     private int uniformColor;
@@ -28,6 +27,8 @@ public class Hook {
     private int uniformColorSpan = -1;
     private int[] foregroundColors;
     private Map<String, String> binding;
+    private boolean[] underLineSpans;
+    private int[] underLineColors;
 
     public Hook(SpanTextView target) {
         this.target = target;
@@ -42,6 +43,7 @@ public class Hook {
     }
 
     //ForegroundSpan
+
     /**
      * style all the text in same color
      *
@@ -73,14 +75,29 @@ public class Hook {
         return this;
     }
 
+    public Hook underLineSpans(boolean... underlineSpans) {
+        this.underLineSpans = underlineSpans;
+        return this;
+    }
+
+    public Hook underLindeSpanColors(int... underLineColors) {
+        this.underLineColors = underLineColors;
+        return this;
+    }
+
 
     //execute according to the config
     public void make(Map<String, String> binding) {
         CharSequence template = target.getTemplateText();
         List<MarkInfo> markInfos = parseAndMark(new StringReader(template.toString()), binding);
-        SpannableString spannableString = new SpannableString(parseAndSubstitute(template.toString(),binding).toString());
+        SpannableString spannableString = new SpannableString(parseAndSubstitute(template.toString(), binding).toString());
         composeColorSpan(spannableString, markInfos);
+        composeUnderLineSpan(spannableString,markInfos);
         target.setText(spannableString);
+    }
+
+    private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
+
     }
 
     private void composeColorSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
@@ -130,7 +147,7 @@ public class Hook {
         MarkInfo mark;
         StringWriter writer = new StringWriter(50);
         while (true) {
-            int c = 0;
+            int c;
             try {
                 if ((c = reader.read()) != -1) {
                     if (c == '$') {
@@ -163,17 +180,17 @@ public class Hook {
         return markInfos;
     }
 
-    private  Writer streamingParseAndSubstitute(Reader reader, Map<String, String> binding) {
+    private Writer streamingParseAndSubstitute(Reader reader, Map<String, String> binding) {
         return parseInternal(reader, binding);
     }
 
-    private  Writer parseAndSubstitute(String template, Map<String, String> binding) {
+    private Writer parseAndSubstitute(String template, Map<String, String> binding) {
         Reader reader = new StringReader(template);
         return parseInternal(reader, binding);
 
     }
 
-    private  Writer parseInternal(Reader reader, Map<String, String> binding) {
+    private Writer parseInternal(Reader reader, Map<String, String> binding) {
         StringWriter writer = new StringWriter(50);
         if (!reader.markSupported())
             reader = new BufferedReader(reader);
