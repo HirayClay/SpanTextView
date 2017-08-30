@@ -20,6 +20,7 @@ public class SpanTextView extends AppCompatTextView {
     private SpannableString spannableString;
     private String handlerName;
     private int color;
+    private CharSequence templateText;
 
     public SpanTextView(Context context) {
         super(context);
@@ -31,7 +32,17 @@ public class SpanTextView extends AppCompatTextView {
         color = array.getColor(R.styleable.SpanTextView_spanColor, Color.GRAY);
         handlerName = array.getString(R.styleable.SpanTextView_spanClick);
         array.recycle();
-        defaultHook();
+//        defaultHook();
+    }
+
+    public CharSequence getTemplateText() {
+        return templateText;
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        super.setText(text, type);
+        templateText = text;
     }
 
     //默认xml布局中的样式只是改变${}包裹的文字的样式，不是替换绑定
