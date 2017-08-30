@@ -34,6 +34,7 @@ public class SpanTextView extends AppCompatTextView {
         defaultHook();
     }
 
+    //默认xml布局中的样式只是改变${}包裹的文字的样式，不是替换绑定
     private void defaultHook() {
 
     }
