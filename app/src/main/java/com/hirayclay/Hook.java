@@ -4,6 +4,7 @@ import android.support.annotation.ColorInt;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Created by CJJ on 2017/8/30.
  *
@@ -27,7 +29,6 @@ public class Hook {
     private int[] foregroundColors;
     private Map<String, String> binding;
     private boolean[] underLineSpans;
-    private int[] underLineColors;
 
     public Hook(SpanTextView target) {
         this.target = target;
@@ -79,24 +80,28 @@ public class Hook {
         return this;
     }
 
-    public Hook underLindeSpanColors(int... underLineColors) {
-        this.underLineColors = underLineColors;
-        return this;
-    }
-
-
     //execute according to the config
     public void make(Map<String, String> binding) {
         CharSequence template = target.getTemplateText();
         List<MarkInfo> markInfos = parseAndMark(new StringReader(template.toString()), binding);
         SpannableString spannableString = new SpannableString(parseAndSubstitute(template.toString(), binding).toString());
         composeColorSpan(spannableString, markInfos);
-        composeUnderLineSpan(spannableString,markInfos);
+        composeUnderLineSpan(spannableString, markInfos);
         target.setText(spannableString);
     }
 
     private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
-
+        int n = -1;
+        for (MarkInfo m :
+                markInfos) {
+            n++;
+            if (n > underLineSpans.length - 1)
+                n--;
+            if (underLineSpans[n]) {
+                UnderlineSpan uls = new UnderlineSpan();
+                spannableString.setSpan(uls,m.start,m.end,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+        }
     }
 
     private void composeColorSpan(SpannableString spannableString, List<MarkInfo> markInfos) {

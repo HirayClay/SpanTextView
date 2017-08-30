@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         binding.put("age", "18");
 
         spanTextView.hook()
-                .color(Color.LTGRAY)
+                .underLineSpans(true,false,true)
                 .colorSpans(Color.RED, Color.CYAN)
                 .make(binding);
     }
