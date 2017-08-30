@@ -42,8 +42,10 @@ public class SpanTextView extends AppCompatTextView {
     @Override
     public void setText(CharSequence text, BufferType type) {
         super.setText(text, type);
-        templateText = text;
+        if (!(text instanceof SpannableString))
+            templateText = text;
     }
+
 
     //默认xml布局中的样式只是改变${}包裹的文字的样式，不是替换绑定
     private void defaultHook() {
@@ -51,7 +53,7 @@ public class SpanTextView extends AppCompatTextView {
     }
 
 
-    private static final class DefaultHook{
+    private static final class DefaultHook {
 
     }
 
