@@ -3,6 +3,7 @@ package com.hirayclay;
 import android.support.annotation.ColorInt;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
 
@@ -80,6 +81,11 @@ public class Hook {
         return this;
     }
 
+
+    public Hook clickSpans(ClickableSpan clickableSpan) {
+        return this;
+    }
+
     //execute according to the config
     public void make(Map<String, String> binding) {
         CharSequence template = target.getTemplateText();
@@ -99,7 +105,7 @@ public class Hook {
                 n--;
             if (underLineSpans[n]) {
                 UnderlineSpan uls = new UnderlineSpan();
-                spannableString.setSpan(uls,m.start,m.end,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(uls, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
     }
@@ -171,6 +177,9 @@ public class Hook {
                                 writer.write(key);
                             }
 
+                        } else {
+                            writer.write('$');
+                            reader.reset();
                         }
                     } else {
                         writer.write(c);
