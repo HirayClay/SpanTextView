@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
+        spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
         Map<String, String> binding = new ArrayMap<>();
         binding.put("name", "Alice");
