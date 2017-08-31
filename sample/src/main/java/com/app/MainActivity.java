@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.hirayclay.Hook;
+import com.hirayclay.SpanTextView;
+
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {

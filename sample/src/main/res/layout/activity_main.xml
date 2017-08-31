@@ -6,9 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="15dp"
-    tools:context="com.app.MainActivity">
+    tools:context="com.hirayclay.com.app.MainActivity">
 
-    <com.app.SpanTextView
+    <com.hirayclay.SpanTextView
         android:id="@+id/span_textview"
         app:spanClick="spanClick"
         android:text="${name} now is ${age} years old, ${height} cm!"

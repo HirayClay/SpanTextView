@@ -1,4 +1,4 @@
-package com.app;
+package com.hirayclay;
 
 import android.content.Context;
 import android.content.res.TypedArray;

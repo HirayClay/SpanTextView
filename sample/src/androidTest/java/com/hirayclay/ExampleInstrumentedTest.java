@@ -1,4 +1,4 @@
-package com.app;
+package com.hirayclay;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.hirayclay.test", appContext.getPackageName());
+        assertEquals("com.hirayclay", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package com.app;
+package com.hirayclay;
 
 import org.junit.Test;
 

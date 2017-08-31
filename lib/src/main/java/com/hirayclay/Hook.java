@@ -1,4 +1,4 @@
-package com.app;
+package com.hirayclay;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -34,7 +34,7 @@ public class Hook {
     private Map<String, String> binding;
     private boolean[] underLineSpans;
     private ClickSpanListener listener;
-    private int highLightColor = Color.parseColor("#00000000");
+    private int highLightColor = Color.TRANSPARENT;
 
     public Hook(SpanTextView target) {
         this.target = target;
