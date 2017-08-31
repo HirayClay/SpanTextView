@@ -86,6 +86,7 @@ public class Hook {
         return this;
     }
 
+
     //execute according to the config
     public void make(Map<String, String> binding) {
         CharSequence template = target.getTemplateText();
