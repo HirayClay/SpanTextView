@@ -31,8 +31,10 @@ public class MainActivity extends AppCompatActivity {
         spanTextView.hook()
                 .uniformColor(Color.GREEN)
                 .underLineSpans(true,false,true)
-                .colorSpans(Color.RED, Color.CYAN)//the second template "height" textcolor is omit ,will be set with uniformColor
+                .colorSpans(Color.RED, Color.CYAN)//the third template "height" textcolor is omit ,will be set with uniformColor
                 .highLightColor(Color.RED)
+                .textSize(0,30)
+                .textSize("height",35)
                 .spanClickListener(new Hook.ClickSpanListener() {
                     @Override
                     public void onSpanClick(int index, String template, String value) {

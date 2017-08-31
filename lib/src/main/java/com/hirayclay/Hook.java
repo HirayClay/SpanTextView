@@ -2,13 +2,16 @@ package com.hirayclay;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.support.v4.util.ArrayMap;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.util.TypedValue;
 import android.view.View;
 
 import java.io.BufferedReader;
@@ -27,29 +30,22 @@ import java.util.Map;
  * @author CJJ
  */
 public class Hook {
-    SpanTextView target;
+    private SpanTextView target;
     private int uniformColor;
-    private boolean uniformUnderLine;
     private int[] foregroundColors;
     private Map<String, String> binding;
     private boolean[] underLineSpans;
     private ClickSpanListener listener;
     private int highLightColor = Color.TRANSPARENT;
+    private int textSize = -1;
+    private Map<Integer, Integer> textSizeMap = new ArrayMap<>();
+    private Map<String, Integer> unProcessedTextSize = new ArrayMap<>();
 
     public Hook(SpanTextView target) {
         this.target = target;
     }
 
-
-    //bindings
-    public Hook bind(Map<String, String> binding) {
-        this.binding = binding;
-        return this;
-
-    }
-
     //ForegroundSpan
-
     /**
      * style all the text in same color
      *
@@ -58,15 +54,6 @@ public class Hook {
      */
     public Hook uniformColor(@ColorInt int color) {
         this.uniformColor = color;
-        return this;
-    }
-
-    /**
-     * @param underline if true ,text is underlined
-     * @return
-     */
-    public Hook underline(boolean underline) {
-        this.uniformUnderLine = underline;
         return this;
     }
 
@@ -90,22 +77,76 @@ public class Hook {
         return this;
     }
 
+    /**
+     * set the  textSize of all spans
+     *
+     * @param textSize unit is "sp"
+     * @return Hook
+     */
+    public Hook uniformSpanTextSize(int textSize) {
+        this.textSize = sp(textSize);
+        return this;
+    }
+
+    public Hook textSize(int index, int textSize) {
+        textSizeMap.put(index, sp(textSize));
+        return this;
+    }
+
+    public Hook textSize(String key, int textSize) {
+        unProcessedTextSize.put(key, sp(textSize));
+        return this;
+    }
 
     //execute according to the config
     public void make(Map<String, String> binding) {
+        this.binding = binding;
         CharSequence template = target.getTemplateText();
-        List<MarkInfo> markInfos = parseAndMark(new StringReader(template.toString()), binding);
+        List<MarkInfo> markers = parseAndMark(new StringReader(template.toString()), binding);
+        processTextAfterMark(markers);
         SpannableString spannableString = new SpannableString(parseAndSubstitute(template.toString(), binding).toString());
-        composeColorSpan(spannableString, markInfos);
-        composeUnderLineSpan(spannableString, markInfos);
-        composeClickableSpan(spannableString, markInfos);
+        composeColorSpan(spannableString, markers);
+        composeUnderLineSpan(spannableString, markers);
+        composeClickableSpan(spannableString, markers);
+        composeTextSize(spannableString, markers);
         target.setText(spannableString);
     }
 
-    private void composeClickableSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
+    private void processTextAfterMark(List<MarkInfo> markers) {
+        if (!unProcessedTextSize.isEmpty()) {
+            for (int i = 0; i < markers.size(); i++) {
+                MarkInfo m = markers.get(i);
+                String key = m.template;
+                Integer size = unProcessedTextSize.get(key);
+                if (size != null)
+                    textSizeMap.put(i, size);
+
+            }
+            unProcessedTextSize.clear();
+        }
+    }
+
+    private void composeTextSize(SpannableString spannableString, List<MarkInfo> markers) {
+        for (int i = 0; i < markers.size(); i++) {
+            MarkInfo markInfo = markers.get(i);
+            Integer textSize = textSizeMap.get(i);
+            if (textSize != null) {
+                AbsoluteSizeSpan ass = new AbsoluteSizeSpan(textSize);
+                spannableString.setSpan(ass, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else {
+                if (this.textSize > 0) {
+                    AbsoluteSizeSpan ass = new AbsoluteSizeSpan(this.textSize);
+                    spannableString.setSpan(ass, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+            }
+
+        }
+    }
+
+    private void composeClickableSpan(SpannableString spannableString, List<MarkInfo> markers) {
         if (listener != null) {
-            for (int i = 0; i < markInfos.size(); i++) {
-                MarkInfo markInfo = markInfos.get(i);
+            for (int i = 0; i < markers.size(); i++) {
+                MarkInfo markInfo = markers.get(i);
                 InternalClickSpan ics = new InternalClickSpan(i, markInfo.template, markInfo.value, listener);
                 spannableString.setSpan(ics, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
@@ -114,10 +155,10 @@ public class Hook {
         }
     }
 
-    private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
+    private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markers) {
         int n = -1;
         for (MarkInfo m :
-                markInfos) {
+                markers) {
             n++;
             if (n > underLineSpans.length - 1)
                 n--;
@@ -128,12 +169,12 @@ public class Hook {
         }
     }
 
-    private void composeColorSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
+    private void composeColorSpan(SpannableString spannableString, List<MarkInfo> markers) {
         if (foregroundColors != null && foregroundColors.length > 0) {
             int i = 0;
             int color;
             for (MarkInfo m :
-                    markInfos) {
+                    markers) {
                 if (i > foregroundColors.length - 1) {
                     if (isValidColor(uniformColor))
                         color = uniformColor;
@@ -147,13 +188,18 @@ public class Hook {
             }
         } else if (isValidColor(uniformColor)) {
             for (MarkInfo m :
-                    markInfos) {
+                    markers) {
                 ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColor);
                 spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         } else {
             //ignored
         }
+    }
+
+
+    private int index(String key) {
+        return 0;
     }
 
     private String findKey(Reader reader) {
@@ -262,6 +308,9 @@ public class Hook {
 
     }
 
+    private int sp(int spTextSize) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, spTextSize, target.getResources().getDisplayMetrics());
+    }
 
     private boolean isValidColor(int color) {
         return componentValid(Color.red(color)) &&
@@ -301,6 +350,7 @@ public class Hook {
         public String value;
         public String template;
         ClickSpanListener listener;
+        public int textSize = -1;
 
         public InternalClickSpan(int index, String template, String value, ClickSpanListener listener) {
             this.index = index;
