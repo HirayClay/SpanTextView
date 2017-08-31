@@ -19,13 +19,22 @@ in your code to control the style:
 ```
         spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
-        Map<String, String> binding = new ArrayMap<>();
+ Map<String, String> binding = new ArrayMap<>();
         binding.put("name", "Alice");
         binding.put("age", "18");
+        binding.put("height","180");
 
         spanTextView.hook()
+                .uniformColor(Color.GREEN)
                 .underLineSpans(true,false,true)
-                .colorSpans(Color.RED, Color.CYAN)
+                .colorSpans(Color.RED, Color.CYAN)//the second template "height" textcolor is omit ,will be set with uniformColor
+                .highLightColor(Color.RED)
+                .spanClickListener(new Hook.ClickSpanListener() {
+                    @Override
+                    public void onSpanClick(int index, String template, String value) {
+                        Toast.makeText(MainActivity.this,"click  "+template+" index:"+index+" value:"+value,Toast.LENGTH_SHORT).show();
+                    }
+                })
                 .make(binding);
 ```
 and then the effect is like this below:
