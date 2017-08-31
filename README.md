@@ -19,7 +19,7 @@ in your code to control the style:
 ```
         spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
- Map<String, String> binding = new ArrayMap<>();
+        Map<String, String> binding = new ArrayMap<>();
         binding.put("name", "Alice");
         binding.put("age", "18");
         binding.put("height","180");
