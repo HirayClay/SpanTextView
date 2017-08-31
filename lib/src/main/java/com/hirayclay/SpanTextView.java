@@ -21,6 +21,7 @@ public class SpanTextView extends AppCompatTextView {
     private String handlerName;
     private int color;
     private CharSequence templateText;
+    private boolean cache;
 
     public SpanTextView(Context context) {
         super(context);
@@ -52,12 +53,22 @@ public class SpanTextView extends AppCompatTextView {
 
     }
 
+    public void setCache(boolean cache) {
+        this.cache = cache;
+    }
+
 
     private static final class DefaultHook {
 
     }
 
+    Hook instance;
     public Hook hook() {
+        if (cache) {
+            if (instance != null)
+                return instance;
+            return instance = new Hook(this);
+        }
         return new Hook(this);
     }
 //    private void transform() {

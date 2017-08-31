@@ -7,9 +7,190 @@
     android:padding="15dp"
     tools:context="com.app.MainActivity">
 
-    <com.hirayclay.SpanTextView
-        android:id="@+id/span_textview"
+
+    <android.support.v7.widget.AppCompatTextView
         android:text="${name} now is ${age} years old, ${height} cm!"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:minHeight="100dp"
+        android:layout_height="wrap_content">
+
+        <com.hirayclay.SpanTextView
+            android:id="@+id/span_textview"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:text="${name} now is ${age} years old, ${height} cm!" />
+    </FrameLayout>
+
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/radio_name"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radio_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="name" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radio_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="age" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radio_height"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="height" />
+    </RadioGroup>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textsize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextSize" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="60"
+            android:progress="25"
+            android:layout_toLeftOf="@+id/textsizeValue"
+            android:layout_toRightOf="@+id/textsize" />
+
+        <TextView
+            android:id="@+id/textsizeValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/textsizeUnit"
+            android:text="25" />
+
+        <TextView
+            android:id="@+id/textsizeUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:text="SpanTextColor"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/colorSelector"
+            android:background="@drawable/oval"
+            android:layout_marginLeft="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:text="highLightColor"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/highLightColorSelector"
+            android:background="@drawable/oval"
+            android:layout_marginLeft="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:text="Binding:"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="name"
+            android:layout_gravity="center_vertical"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/nameValue"
+            android:text="Alice"
+            android:layout_width="wrap_content"
+            android:minWidth="100dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="age     "
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/ageValue"
+            android:text="18"
+            android:layout_width="wrap_content"
+            android:minWidth="100dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="height"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/heightValue"
+            android:text="180"
+            android:layout_width="wrap_content"
+            android:minWidth="100dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

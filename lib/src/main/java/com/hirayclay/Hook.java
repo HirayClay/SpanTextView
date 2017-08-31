@@ -43,9 +43,23 @@ public class Hook {
 
     public Hook(SpanTextView target) {
         this.target = target;
+        this.uniformColor = target.getCurrentTextColor();
+    }
+
+    /**
+     * @param c if set true Hook will be single instance,when call {@link SpanTextView#hook()}
+     *          will not created a new one except first call
+     *          note :this method should be called before{@link SpanTextView#hook()}
+     * @return {@link Hook}
+     */
+
+    public Hook cache(boolean c) {
+        this.target.setCache(c);
+        return this;
     }
 
     //ForegroundSpan
+
     /**
      * style all the text in same color
      *
@@ -57,7 +71,7 @@ public class Hook {
         return this;
     }
 
-    public Hook colorSpans(int... foregroundSpanColors) {
+    public Hook spanTextColor(int... foregroundSpanColors) {
         this.foregroundColors = foregroundSpanColors;
         return this;
     }
@@ -96,6 +110,17 @@ public class Hook {
     public Hook textSize(String key, int textSize) {
         unProcessedTextSize.put(key, sp(textSize));
         return this;
+    }
+
+    public Hook bind(Map<String, String> binding) {
+        this.binding = binding;
+        return this;
+    }
+
+    public void make() {
+        if (this.binding != null)
+            make(binding);
+        else throw new IllegalStateException("binding is not set before call make() method");
     }
 
     //execute according to the config
@@ -156,6 +181,8 @@ public class Hook {
     }
 
     private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markers) {
+        if (underLineSpans == null)
+            return;
         int n = -1;
         for (MarkInfo m :
                 markers) {
@@ -197,11 +224,6 @@ public class Hook {
         }
     }
 
-
-    private int index(String key) {
-        return 0;
-    }
-
     private String findKey(Reader reader) {
         StringWriter stringBuilder = new StringWriter(10);
         int c;
@@ -221,7 +243,7 @@ public class Hook {
     private List<MarkInfo> parseAndMark(Reader reader, Map<String, String> binding) {
         if (!reader.markSupported())
             reader = new BufferedReader(reader);
-        List<MarkInfo> markInfos = new ArrayList<>();
+        List<MarkInfo> markers = new ArrayList<>();
         MarkInfo mark;
         StringWriter writer = new StringWriter(50);
         while (true) {
@@ -237,7 +259,7 @@ public class Hook {
                                 String value = binding.get(key);
                                 int start = writer.getBuffer().length();
                                 int end = start + value.length();
-                                markInfos.add(new MarkInfo(key, value, start, end));
+                                markers.add(new MarkInfo(key, value, start, end));
                                 writer.write(value);
                             } else {
                                 writer.write("${");
@@ -258,7 +280,7 @@ public class Hook {
             }
         }
 
-        return markInfos;
+        return markers;
     }
 
     private Writer streamingParseAndSubstitute(Reader reader, Map<String, String> binding) {
