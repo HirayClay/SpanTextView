@@ -38,3 +38,4 @@ in your code to control the style:
                 .make(binding);
 ```
 and then the effect is like this below:
+<image src="https://github.com/HirayClay/SpanTextView/raw/master/static/binding.png"/>
