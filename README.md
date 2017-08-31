@@ -2,7 +2,8 @@
 
 days ago,i was learning groovy,when i meet "Template".i realize a old project may be brought to life again,
 that is it! After reading the template source code in groovy ,I use template in this project like groovy's template.
-Comparing to  setting Android's various Span,set span with template is easier!
+Comparing to  setting Android's various Span,set span with template is easier without concerning about
+the fuk index.Just set span with obvious template!
 
 # Usage
 
