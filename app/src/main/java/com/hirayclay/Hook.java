@@ -1,11 +1,15 @@
 package com.hirayclay;
 
+import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,10 +30,10 @@ public class Hook {
     SpanTextView target;
     private int uniformColor;
     private boolean uniformUnderLine;
-    private int uniformColorSpan = -1;
     private int[] foregroundColors;
     private Map<String, String> binding;
     private boolean[] underLineSpans;
+    private ClickSpanListener listener;
 
     public Hook(SpanTextView target) {
         this.target = target;
@@ -51,7 +55,7 @@ public class Hook {
      * @param color
      * @return
      */
-    public Hook color(@ColorInt int color) {
+    public Hook uniformColor(@ColorInt int color) {
         this.uniformColor = color;
         return this;
     }
@@ -62,12 +66,6 @@ public class Hook {
      */
     public Hook underline(boolean underline) {
         this.uniformUnderLine = underline;
-        return this;
-    }
-
-
-    public Hook colorSpan(int foregroundSpanColor) {
-        this.uniformColorSpan = foregroundSpanColor;
         return this;
     }
 
@@ -82,7 +80,8 @@ public class Hook {
     }
 
 
-    public Hook clickSpans(ClickableSpan clickableSpan) {
+    public Hook spanClickListener(ClickSpanListener listener) {
+        this.listener = listener;
         return this;
     }
 
@@ -94,7 +93,19 @@ public class Hook {
         SpannableString spannableString = new SpannableString(parseAndSubstitute(template.toString(), binding).toString());
         composeColorSpan(spannableString, markInfos);
         composeUnderLineSpan(spannableString, markInfos);
+        composeClickableSpan(spannableString, markInfos);
         target.setText(spannableString);
+    }
+
+    private void composeClickableSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
+        if (listener != null) {
+            for (int i = 0; i < markInfos.size(); i++) {
+                MarkInfo markInfo = markInfos.get(i);
+                InternalClickSpan ics = new InternalClickSpan(i, markInfo.template, markInfo.value, listener);
+                spannableString.setSpan(ics, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+            target.setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 
     private void composeUnderLineSpan(SpannableString spannableString, List<MarkInfo> markInfos) {
@@ -117,17 +128,21 @@ public class Hook {
             int color;
             for (MarkInfo m :
                     markInfos) {
-                if (i > foregroundColors.length - 1)
-                    i--;
-                color = foregroundColors[i];
+                if (i > foregroundColors.length - 1) {
+                    if (isValidColor(uniformColor))
+                        color = uniformColor;
+                    else color = target.getCurrentTextColor();
+
+                } else
+                    color = foregroundColors[i];
                 ForegroundColorSpan fcs = new ForegroundColorSpan(color);
                 spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 i++;
             }
-        } else if (uniformColorSpan >= 0 && uniformColorSpan <= 256) {
+        } else if (isValidColor(uniformColor)) {
             for (MarkInfo m :
                     markInfos) {
-                ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColorSpan);
+                ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColor);
                 spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         } else {
@@ -150,7 +165,7 @@ public class Hook {
         return stringBuilder.toString();
     }
 
-    //标记出包裹文字在解析过的字符串中的下标，方便后续施加乱七八糟的Span
+    //标记出模版在解析过的字符串中的下标，方便后续施加乱七八糟的Span
     private List<MarkInfo> parseAndMark(Reader reader, Map<String, String> binding) {
         if (!reader.markSupported())
             reader = new BufferedReader(reader);
@@ -170,7 +185,7 @@ public class Hook {
                                 String value = binding.get(key);
                                 int start = writer.getBuffer().length();
                                 int end = start + value.length();
-                                markInfos.add(new MarkInfo(start, end));
+                                markInfos.add(new MarkInfo(key, value, start, end));
                                 writer.write(value);
                             } else {
                                 writer.write("${");
@@ -241,13 +256,61 @@ public class Hook {
 
     }
 
+
+    private boolean isValidColor(int color) {
+        return componentValid(Color.red(color)) &&
+                componentValid(Color.green(color)) &&
+                componentValid(Color.blue(color));
+    }
+
+    private boolean componentValid(int comp) {
+        return comp >= 0 && comp < 256;
+    }
+
     private static final class MarkInfo {
+        public String value;
+        public String template;
         public int start;
         public int end;
 
-        public MarkInfo(int start, int end) {
+        public MarkInfo(String template, String value, int start, int end) {
+            this.template = template;
+            this.value = value;
             this.start = start;
             this.end = end;
+        }
+    }
+
+    public interface ClickSpanListener {
+        /**
+         * @param index    the template index in all the templates
+         * @param template the template text
+         * @param value    the replaced template's value
+         */
+        void onSpanClick(int index, String template, String value);
+    }
+
+    private final class InternalClickSpan extends ClickableSpan {
+        int index;
+        public String value;
+        public String template;
+        ClickSpanListener listener;
+
+        public InternalClickSpan(int index, String template, String value, ClickSpanListener listener) {
+            this.index = index;
+            this.template = template;
+            this.value = value;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            listener.onSpanClick(index, template, value);
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+//            super.updateDrawState(ds);
         }
     }
 }
