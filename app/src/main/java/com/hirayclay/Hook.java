@@ -34,6 +34,7 @@ public class Hook {
     private Map<String, String> binding;
     private boolean[] underLineSpans;
     private ClickSpanListener listener;
+    private int highLightColor = Color.parseColor("#00000000");
 
     public Hook(SpanTextView target) {
         this.target = target;
@@ -79,6 +80,10 @@ public class Hook {
         return this;
     }
 
+    public Hook highLightColor(@ColorInt int highLightColor) {
+        this.highLightColor = highLightColor;
+        return this;
+    }
 
     public Hook spanClickListener(ClickSpanListener listener) {
         this.listener = listener;
@@ -105,6 +110,7 @@ public class Hook {
                 spannableString.setSpan(ics, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
             target.setMovementMethod(LinkMovementMethod.getInstance());
+            target.setHighlightColor(highLightColor);
         }
     }
 

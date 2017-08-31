@@ -29,10 +29,11 @@ public class MainActivity extends AppCompatActivity {
                 .uniformColor(Color.GREEN)
                 .underLineSpans(true,false,true)
                 .colorSpans(Color.RED, Color.CYAN)//the second template "height" textcolor is omit ,will be set with uniformColor
+                .highLightColor(Color.RED)
                 .spanClickListener(new Hook.ClickSpanListener() {
                     @Override
                     public void onSpanClick(int index, String template, String value) {
-                        Toast.makeText(MainActivity.this,"click  "+template+" index:"+index+" value:"+value,Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"click  "+template+" index:"+index+" value:"+value,Toast.LENGTH_SHORT).show();
                     }
                 })
                 .make(binding);
