@@ -92,6 +92,68 @@
             android:text="sp" />
     </RelativeLayout>
 
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/uniformTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="uniformTextSize" />
+
+        <SeekBar
+            android:id="@+id/uniformSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="60"
+            android:progress="25"
+            android:layout_toLeftOf="@+id/uniformtextsizeValue"
+            android:layout_toRightOf="@+id/uniformTextSize" />
+
+        <TextView
+            android:id="@+id/uniformtextsizeValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/uniformtextsizeUnit"
+            android:text="25" />
+
+        <TextView
+            android:id="@+id/uniformtextsizeUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Cache"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ToggleButton
+            android:id="@+id/cacheToggle"
+            android:button="@null"
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/refreshAfterChangeCache"
+            android:text="refreshAfterChangeCache"
+            android:textAllCaps="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_marginTop="15dp"

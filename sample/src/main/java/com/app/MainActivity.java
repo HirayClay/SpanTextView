@@ -2,6 +2,7 @@ package com.app;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
@@ -9,18 +10,22 @@ import android.support.v7.widget.AppCompatRadioButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.hirayclay.Hook;
 import com.hirayclay.SpanTextView;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     @Bind(R.id.highLightColorSelector)
     TextView highLightColorSelector;
-
+    @Bind(R.id.cacheToggle)
+    ToggleButton cacheToggle;
 
     int[] colors = {
             R.color.blue,
@@ -63,6 +69,15 @@ public class MainActivity extends AppCompatActivity {
             R.color.orange,
             R.color.purple,
             R.color.green};
+    @Bind(R.id.uniformTextSize)
+    TextView uniformTextSize;
+    @Bind(R.id.uniformSeekBar)
+    SeekBar uniformSeekBar;
+    @Bind(R.id.uniformtextsizeValue)
+    TextView uniformtextsizeValue;
+    @Bind(R.id.uniformtextsizeUnit)
+    TextView uniformtextsizeUnit;
+
 
     private int textColor;
     private int highLightTextColor = Color.TRANSPARENT;
@@ -106,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setUpListeners() {
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                refresh();
+            }
+        });
+
         colorSelector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,9 +175,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        uniformSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                uniformtextsizeValue.setText(String.valueOf(uniformSeekBar.getProgress()));
+                refresh();
+            }
+        });
+
         nameValue.addTextChangedListener(watcher);
         ageValue.addTextChangedListener(watcher);
         heightValue.addTextChangedListener(watcher);
+    }
+
+
+    @OnClick(R.id.refreshAfterChangeCache)
+    public void refreshAfterChangeCache() {
+        spanTextView.hook().cache(cacheToggle.isChecked()).bind(binding).make();
     }
 
     private void refresh() {
@@ -169,19 +216,19 @@ public class MainActivity extends AppCompatActivity {
 
         String key = button.getText().toString();
 
+
         Hook hook = spanTextView.hook();
-        if (textColor != 0)
-            hook.bind(binding)
-                    .uniformColor(textColor)
-                    .highLightColor(highLightTextColor)
-                    .spanClickListener(clickSpanListener)
-                    .textSize(key, textSize)
-                    .make();
-        else hook.bind(binding)
+
+        hook.bind(binding)
+                .cache(cacheToggle.isChecked())
+                .uniformSpanTextSize(uniformSeekBar.getProgress())
                 .highLightColor(highLightTextColor)
                 .spanClickListener(clickSpanListener)
-                .textSize(key, textSize)
-                .make();
+                .textSize(key, textSize);
+        if (textColor != 0)
+            hook.uniformColor(textColor);
+        hook.make();
+
     }
 
     private void initDisplay() {

@@ -55,6 +55,10 @@ public class SpanTextView extends AppCompatTextView {
 
     public void setCache(boolean cache) {
         this.cache = cache;
+        if (cache)
+        instance = beforeCacheInstance;
+        else beforeCacheInstance = null;
+//        beforeCacheInstance = null;
     }
 
 
@@ -63,13 +67,17 @@ public class SpanTextView extends AppCompatTextView {
     }
 
     Hook instance;
+    Hook beforeCacheInstance;
+
     public Hook hook() {
         if (cache) {
-            if (instance != null)
+            if (instance != null) {
                 return instance;
+            }else if (beforeCacheInstance !=null)
+                return instance = beforeCacheInstance;
             return instance = new Hook(this);
         }
-        return new Hook(this);
+        return beforeCacheInstance = new Hook(this);
     }
 //    private void transform() {
 //        String text = getText().toString();

@@ -47,9 +47,10 @@ public class Hook {
     }
 
     /**
-     * @param c if set true Hook will be single instance,when call {@link SpanTextView#hook()}
+     * @param c if set true Hook will be single instance,when call {@link SpanTextView#hook()}next
+     *          time ,the older Hook will be returned.If you want reset to default behavior(create new one every time)
+     *          just call {@link SpanTextView#setCache(boolean)} and set the param to false
      *          will not created a new one except first call
-     *          note :this method should be called before{@link SpanTextView#hook()}
      * @return {@link Hook}
      */
 
@@ -118,9 +119,9 @@ public class Hook {
     }
 
     public void make() {
-        if (this.binding != null)
+//        if (this.binding != null)
             make(binding);
-        else throw new IllegalStateException("binding is not set before call make() method");
+//        else throw new IllegalStateException("binding is not set before call make() method");
     }
 
     //execute according to the config
@@ -306,7 +307,7 @@ public class Hook {
                         c = reader.read();
                         if (c == '{') {
                             String key = findKey(reader);
-                            if (!key.isEmpty() && binding.containsKey(key))
+                            if (!key.isEmpty() && binding != null && binding.containsKey(key))
                                 writer.write(binding.get(key));
                             else {
                                 writer.write("${");
