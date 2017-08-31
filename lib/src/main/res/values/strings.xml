@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">lib</string>
+
+    <declare-styleable name="SpanTextView">
+        <attr name="spanClick" format="string" />
+        <attr name="spanColor" format="color" />
+    </declare-styleable>
+</resources>
