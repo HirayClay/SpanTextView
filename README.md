@@ -10,7 +10,7 @@ Comparing to  setting Android's various Span,set span with template is easier!
         <com.hirayclay.SpanTextView
             android:id="@+id/span_textview"
             app:spanClick="spanClick"
-            android:text="${name} now is ${age} years old!"
+            android:text="${name} now is ${age} years old, ${height} cm!"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 ```
