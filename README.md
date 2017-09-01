@@ -43,5 +43,9 @@ and then the effect is like this below:
 <image src="https://github.com/HirayClay/SpanTextView/raw/master/static/binding.png"/>
 
 
-# Video
+# Display
 <image src="https://github.com/HirayClay/SpanTextView/raw/master/static/blur.gif"/>
+
+
+# Apk
+[download]("https://github.com/HirayClay/SpanTextView/raw/master/static/demo.apk")
