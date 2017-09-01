@@ -361,9 +361,9 @@ public class Hook {
 
     public interface ClickSpanListener {
         /**
-         * @param index    the template index in all the templates
-         * @param template the template text
-         * @param value    the replaced template's value
+         * @param index    the key position in all the keys
+         * @param template the key name
+         * @param value    the replaced key's value
          */
         void onSpanClick(int index, String template, String value);
     }

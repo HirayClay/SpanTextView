@@ -41,3 +41,7 @@ in your code to control the style:
 and then the effect is like this below:
 
 <image src="https://github.com/HirayClay/SpanTextView/raw/master/static/binding.png"/>
+
+
+# Video
+<iframe height=498 width=510 src="https://github.com/HirayClay/SpanTextView/raw/master/static/video.mp4" frameborder=0 allowfullscreen></iframe>
