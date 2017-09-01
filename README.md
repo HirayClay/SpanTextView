@@ -48,4 +48,4 @@ and then the effect is like this below:
 
 
 # Apk
-[download]("https://github.com/HirayClay/SpanTextView/raw/master/static/demo.apk")
+[download](static/demo.apk)
