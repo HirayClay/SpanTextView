@@ -44,4 +44,4 @@ and then the effect is like this below:
 
 
 # Video
-<iframe height=498 width=510 src="https://github.com/HirayClay/SpanTextView/raw/master/static/video.mp4" frameborder=0 allowfullscreen></iframe>
+<image src="https://github.com/HirayClay/SpanTextView/raw/master/static/blur.gif"/>
