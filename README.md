@@ -48,4 +48,4 @@ and then the effect is like this below:
 
 
 # Apk
-[download](static/demo.apk)
+[download](demo.apk)
