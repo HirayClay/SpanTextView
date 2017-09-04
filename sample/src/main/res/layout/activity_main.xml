@@ -9,7 +9,7 @@
 
 
     <android.support.v7.widget.AppCompatTextView
-        android:text="${name} now is ${age} years old, ${height} cm!"
+        android:text="${name} now is ${age} years old, ${height} cm!,${avatar}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
-            android:text="${name} now is ${age} years old, ${height} cm!" />
+            android:text="${name} now is ${age} years old, ${height} cm!${avatar}" />
     </FrameLayout>
 
 

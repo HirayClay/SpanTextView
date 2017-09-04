@@ -10,7 +10,6 @@ import android.support.v7.widget.AppCompatRadioButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -20,7 +19,6 @@ import android.widget.ToggleButton;
 import com.hirayclay.Hook;
 import com.hirayclay.SpanTextView;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -224,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 .uniformSpanTextSize(uniformSeekBar.getProgress())
                 .highLightColor(highLightTextColor)
                 .spanClickListener(clickSpanListener)
+                .image("avatar",getResources().getDrawable(R.drawable.girl))
                 .textSize(key, textSize);
         if (textColor != 0)
             hook.uniformColor(textColor);
@@ -240,10 +239,11 @@ public class MainActivity extends AppCompatActivity {
         spanTextView.hook()
                 .uniformColor(Color.GREEN)
                 .underLineSpans(true, false, true)
-                .spanTextColor(Color.RED, Color.CYAN)//the third template "height" textcolor is omit ,will be set with uniformColor
+                .spanTextColor(Color.RED, Color.CYAN)//the third key "height" textcolor is omit ,will be set with uniformColor
                 .highLightColor(Color.RED)
                 .textSize(0, 25)
                 .textSize("height", 25)
+                .image("avatar",getResources().getDrawable(R.drawable.girl))
                 .spanClickListener(new Hook.ClickSpanListener() {
                     @Override
                     public void onSpanClick(int index, String template, String value) {

@@ -12,6 +12,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.text.style.UnderlineSpan;
 import android.util.TypedValue;
 import android.view.View;
@@ -163,7 +164,7 @@ public class Hook {
             else drawables.put(key, target.getResources().getDrawable(id));
 
         }
-        return null;
+        return drawables;
     }
 
     public void make() {
@@ -191,7 +192,7 @@ public class Hook {
         if (!unProcessedTextSize.isEmpty()) {
             for (int i = 0; i < markers.size(); i++) {
                 MarkInfo m = markers.get(i);
-                String key = m.template;
+                String key = m.key;
                 Integer size = unProcessedTextSize.get(key);
                 if (size != null)
                     textSizeMap.put(i, size);
@@ -202,23 +203,35 @@ public class Hook {
     }
 
     private void composeImageSpan(SpannableString spannableString, List<MarkInfo> markers) {
+        for (int i = 0; i < markers.size(); i++) {
+            MarkInfo markInfo = markers.get(i);
 
+            Drawable drawable = drawableMap.get(markInfo.key);
+            if (drawable != null) {
+                drawable.setBounds(0,0,60,60);
+                ImageSpan is = new ImageSpan(drawable);
+                spannableString.setSpan(is, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+
+        }
     }
 
     private void composeTextSize(SpannableString spannableString, List<MarkInfo> markers) {
         for (int i = 0; i < markers.size(); i++) {
             MarkInfo markInfo = markers.get(i);
-            Integer textSize = textSizeMap.get(i);
-            if (textSize != null) {
-                AbsoluteSizeSpan ass = new AbsoluteSizeSpan(textSize);
-                spannableString.setSpan(ass, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else {
-                if (this.textSize > 0) {
-                    AbsoluteSizeSpan ass = new AbsoluteSizeSpan(this.textSize);
+            if (markInfo.value != null) {
+                Integer textSize = textSizeMap.get(i);
+                if (textSize != null) {
+                    AbsoluteSizeSpan ass = new AbsoluteSizeSpan(textSize);
                     spannableString.setSpan(ass, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                } else {
+                    if (this.textSize > 0) {
+                        AbsoluteSizeSpan ass = new AbsoluteSizeSpan(this.textSize);
+                        spannableString.setSpan(ass, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    }
                 }
-            }
 
+            }
         }
     }
 
@@ -226,8 +239,11 @@ public class Hook {
         if (listener != null) {
             for (int i = 0; i < markers.size(); i++) {
                 MarkInfo markInfo = markers.get(i);
-                InternalClickSpan ics = new InternalClickSpan(i, markInfo.template, markInfo.value, listener);
-                spannableString.setSpan(ics, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                if (markInfo.value != null) {
+
+                    InternalClickSpan ics = new InternalClickSpan(i, markInfo.key, markInfo.value, listener);
+                    spannableString.setSpan(ics, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             }
             target.setMovementMethod(LinkMovementMethod.getInstance());
             target.setHighlightColor(highLightColor);
@@ -241,11 +257,14 @@ public class Hook {
         for (MarkInfo m :
                 markers) {
             n++;
-            if (n > underLineSpans.length - 1)
-                n--;
-            if (underLineSpans[n]) {
-                UnderlineSpan uls = new UnderlineSpan();
-                spannableString.setSpan(uls, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            if (m.value != null) {
+
+                if (n > underLineSpans.length - 1)
+                    n--;
+                if (underLineSpans[n]) {
+                    UnderlineSpan uls = new UnderlineSpan();
+                    spannableString.setSpan(uls, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             }
         }
     }
@@ -256,22 +275,28 @@ public class Hook {
             int color;
             for (MarkInfo m :
                     markers) {
-                if (i > foregroundColors.length - 1) {
-                    if (isValidColor(uniformColor))
-                        color = uniformColor;
-                    else color = target.getCurrentTextColor();
+                if (m.value != null) {
 
-                } else
-                    color = foregroundColors[i];
-                ForegroundColorSpan fcs = new ForegroundColorSpan(color);
-                spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                i++;
+                    if (i > foregroundColors.length - 1) {
+                        if (isValidColor(uniformColor))
+                            color = uniformColor;
+                        else color = target.getCurrentTextColor();
+
+                    } else
+                        color = foregroundColors[i];
+                    ForegroundColorSpan fcs = new ForegroundColorSpan(color);
+                    spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    i++;
+                }
             }
         } else if (isValidColor(uniformColor)) {
             for (MarkInfo m :
                     markers) {
-                ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColor);
-                spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                if (m.value != null) {
+
+                    ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColor);
+                    spannableString.setSpan(fcs, m.start, m.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             }
         } else {
             //ignored
@@ -309,12 +334,22 @@ public class Hook {
                         c = reader.read();
                         if (c == '{') {
                             String key = findKey(reader);
-                            if (!key.isEmpty() && binding.containsKey(key)) {
+                            //only true for text
+                            if (!key.isEmpty()) {
                                 String value = binding.get(key);
-                                int start = writer.getBuffer().length();
-                                int end = start + value.length();
-                                markers.add(new MarkInfo(key, value, start, end));
-                                writer.write(value);
+                                //for text
+                                if (value != null) {
+                                    int start = writer.getBuffer().length();
+                                    int end = start + value.length();
+                                    markers.add(new MarkInfo(key, value, start, end));
+                                    writer.write(value);
+                                } else {//for image
+
+                                    int start = writer.getBuffer().length();
+                                    int end = start + key.length();
+                                    markers.add(new MarkInfo(key, value, start, end));
+                                    writer.write(key);
+                                }
                             } else {
                                 writer.write("${");
                                 //key not found
@@ -356,8 +391,10 @@ public class Hook {
                         c = reader.read();
                         if (c == '{') {
                             String key = findKey(reader);
-                            if (!key.isEmpty() && binding != null && binding.containsKey(key))
+                            if (!key.isEmpty() && binding != null /*&& binding.containsKey(key)*/)
+                                if (binding.get(key)!=null)
                                 writer.write(binding.get(key));
+                                else writer.write(key);
                             else {
                                 writer.write("${");
                                 //key not found
@@ -396,12 +433,12 @@ public class Hook {
 
     private static final class MarkInfo {
         public String value;
-        public String template;
+        public String key;
         public int start;
         public int end;
 
-        public MarkInfo(String template, String value, int start, int end) {
-            this.template = template;
+        public MarkInfo(String key, String value, int start, int end) {
+            this.key = key;
             this.value = value;
             this.start = start;
             this.end = end;
