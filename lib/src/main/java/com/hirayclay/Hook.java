@@ -14,8 +14,10 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.UnderlineSpan;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.ImageSwitcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -139,7 +141,7 @@ public class Hook {
      * @return
      */
     public Hook images(Map<String, Drawable> drawableMap) {
-        drawableMap.putAll(drawableMap);
+        this.drawableMap.putAll(drawableMap);
         return this;
     }
 
@@ -167,13 +169,33 @@ public class Hook {
         return drawables;
     }
 
+
+    Map<String, List<Object>> appliedSpan = new ArrayMap<>();
+
+    /**
+     * @param key  the key in template string
+     * @param span your Span instance you want to be applied on the key
+     * @return Hook
+     */
+    public Hook apply(String key, Object span) {
+        List<Object> list = appliedSpan.get(key);
+        if (list != null)
+            list.add(span);
+        else {
+            list = new ArrayList<>(2);
+            list.add(span);
+            appliedSpan.put(key, list);
+        }
+        return this;
+    }
+
     public void make() {
 //        if (this.binding != null)
         make(binding);
 //        else throw new IllegalStateException("binding is not set before call make() method");
     }
 
-    //execute according to the config
+    //execute according to the binding
     public void make(Map<String, String> binding) {
         this.binding = binding;
         CharSequence template = target.getTemplateText();
@@ -185,7 +207,12 @@ public class Hook {
         composeClickableSpan(spannableString, markers);
         composeTextSize(spannableString, markers);
         composeImageSpan(spannableString, markers);
+        applySpan(spannableString,markers);
         target.setText(spannableString);
+    }
+
+    private void applySpan(SpannableString spannableString, List<MarkInfo> markers) {
+
     }
 
     private void processTextAfterMark(List<MarkInfo> markers) {
@@ -208,8 +235,10 @@ public class Hook {
 
             Drawable drawable = drawableMap.get(markInfo.key);
             if (drawable != null) {
-                drawable.setBounds(0,0,60,60);
-                ImageSpan is = new ImageSpan(drawable);
+                if (drawable.getBounds().width() == 0 || drawable.getBounds().height() == 0) {
+                    drawable.setBounds(0, 0, (int) target.getTextSize(), (int) target.getTextSize());
+                }
+                ImageSpan is = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
                 spannableString.setSpan(is, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
 
@@ -219,6 +248,7 @@ public class Hook {
     private void composeTextSize(SpannableString spannableString, List<MarkInfo> markers) {
         for (int i = 0; i < markers.size(); i++) {
             MarkInfo markInfo = markers.get(i);
+            //check ImageSpan
             if (markInfo.value != null) {
                 Integer textSize = textSizeMap.get(i);
                 if (textSize != null) {
@@ -239,6 +269,8 @@ public class Hook {
         if (listener != null) {
             for (int i = 0; i < markers.size(); i++) {
                 MarkInfo markInfo = markers.get(i);
+
+                //check ImageSpan
                 if (markInfo.value != null) {
 
                     InternalClickSpan ics = new InternalClickSpan(i, markInfo.key, markInfo.value, listener);
@@ -257,6 +289,7 @@ public class Hook {
         for (MarkInfo m :
                 markers) {
             n++;
+            //check ImageSpan
             if (m.value != null) {
 
                 if (n > underLineSpans.length - 1)
@@ -275,6 +308,7 @@ public class Hook {
             int color;
             for (MarkInfo m :
                     markers) {
+                //check ImageSpan
                 if (m.value != null) {
 
                     if (i > foregroundColors.length - 1) {
@@ -292,6 +326,7 @@ public class Hook {
         } else if (isValidColor(uniformColor)) {
             for (MarkInfo m :
                     markers) {
+                //check ImageSpan
                 if (m.value != null) {
 
                     ForegroundColorSpan fcs = new ForegroundColorSpan(uniformColor);
@@ -323,7 +358,6 @@ public class Hook {
         if (!reader.markSupported())
             reader = new BufferedReader(reader);
         List<MarkInfo> markers = new ArrayList<>();
-        MarkInfo mark;
         StringWriter writer = new StringWriter(50);
         while (true) {
             int c;
@@ -347,7 +381,7 @@ public class Hook {
 
                                     int start = writer.getBuffer().length();
                                     int end = start + key.length();
-                                    markers.add(new MarkInfo(key, value, start, end));
+                                    markers.add(new MarkInfo(key, null, start, end));
                                     writer.write(key);
                                 }
                             } else {
@@ -392,8 +426,8 @@ public class Hook {
                         if (c == '{') {
                             String key = findKey(reader);
                             if (!key.isEmpty() && binding != null /*&& binding.containsKey(key)*/)
-                                if (binding.get(key)!=null)
-                                writer.write(binding.get(key));
+                                if (binding.get(key) != null)
+                                    writer.write(binding.get(key));
                                 else writer.write(key);
                             else {
                                 writer.write("${");
