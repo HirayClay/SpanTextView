@@ -1,6 +1,8 @@
 package com.hirayclay;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.v4.util.ArrayMap;
 import android.text.SpannableString;
@@ -21,6 +23,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +43,7 @@ public class Hook {
     private int textSize = -1;
     private Map<Integer, Integer> textSizeMap = new ArrayMap<>();
     private Map<String, Integer> unProcessedTextSize = new ArrayMap<>();
+    private Map<String, Drawable> drawableMap = new ArrayMap<>();
 
     public Hook(SpanTextView target) {
         this.target = target;
@@ -49,13 +53,19 @@ public class Hook {
     /**
      * @param c if set true Hook will be single instance,when call {@link SpanTextView#hook()}next
      *          time ,the older Hook will be returned.If you want reset to default behavior(create new one every time)
-     *          just call {@link SpanTextView#setCache(boolean)} and set the param to false
+     *          just call {@link SpanTextView#setCache(boolean)} and set false.
      *          will not created a new one except first call
      * @return {@link Hook}
      */
 
     public Hook cache(boolean c) {
         this.target.setCache(c);
+        return this;
+    }
+
+    //createTemplate
+    public Hook template(String template) {
+        this.target.setTemplateText(template);
         return this;
     }
 
@@ -118,9 +128,47 @@ public class Hook {
         return this;
     }
 
+    public Hook image(String key, Drawable drawable) {
+        drawableMap.put(key, drawable);
+        return this;
+    }
+
+    /**
+     * @param drawableMap the key and the corresponding drawable
+     * @return
+     */
+    public Hook images(Map<String, Drawable> drawableMap) {
+        drawableMap.putAll(drawableMap);
+        return this;
+    }
+
+
+    /**
+     * @param drawableRes the key and the drawable resource id
+     * @return
+     */
+    public Hook imageRes(Map<String, Integer> drawableRes) {
+        drawableMap.putAll(wrap(drawableRes));
+        return this;
+    }
+
+    private Map<String, Drawable> wrap(Map<String, Integer> drawableRes) {
+        Map<String, Drawable> drawables = new ArrayMap<>();
+        Iterator<String> iterator = drawableRes.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            int id = drawableRes.get(key);
+            if (Build.VERSION.SDK_INT >= 21)
+                drawables.put(key, target.getResources().getDrawable(id, null));
+            else drawables.put(key, target.getResources().getDrawable(id));
+
+        }
+        return null;
+    }
+
     public void make() {
 //        if (this.binding != null)
-            make(binding);
+        make(binding);
 //        else throw new IllegalStateException("binding is not set before call make() method");
     }
 
@@ -135,6 +183,7 @@ public class Hook {
         composeUnderLineSpan(spannableString, markers);
         composeClickableSpan(spannableString, markers);
         composeTextSize(spannableString, markers);
+        composeImageSpan(spannableString, markers);
         target.setText(spannableString);
     }
 
@@ -150,6 +199,10 @@ public class Hook {
             }
             unProcessedTextSize.clear();
         }
+    }
+
+    private void composeImageSpan(SpannableString spannableString, List<MarkInfo> markers) {
+
     }
 
     private void composeTextSize(SpannableString spannableString, List<MarkInfo> markers) {
@@ -284,10 +337,6 @@ public class Hook {
         return markers;
     }
 
-    private Writer streamingParseAndSubstitute(Reader reader, Map<String, String> binding) {
-        return parseInternal(reader, binding);
-    }
-
     private Writer parseAndSubstitute(String template, Map<String, String> binding) {
         Reader reader = new StringReader(template);
         return parseInternal(reader, binding);
@@ -332,7 +381,7 @@ public class Hook {
     }
 
     private int sp(int spTextSize) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, spTextSize, target.getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, spTextSize, target.getResources().getDisplayMetrics());
     }
 
     private boolean isValidColor(int color) {
@@ -373,7 +422,6 @@ public class Hook {
         public String value;
         public String template;
         ClickSpanListener listener;
-        public int textSize = -1;
 
         public InternalClickSpan(int index, String template, String value, ClickSpanListener listener) {
             this.index = index;

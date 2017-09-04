@@ -74,8 +74,8 @@
             android:layout_height="wrap_content"
             android:max="60"
             android:progress="25"
-            android:layout_toLeftOf="@+id/textsizeValue"
-            android:layout_toRightOf="@+id/textsize" />
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/textsize" />
 
         <TextView
             android:id="@+id/textsizeValue"
