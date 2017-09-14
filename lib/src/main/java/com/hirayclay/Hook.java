@@ -207,12 +207,24 @@ public class Hook {
         composeClickableSpan(spannableString, markers);
         composeTextSize(spannableString, markers);
         composeImageSpan(spannableString, markers);
-        applySpan(spannableString,markers);
+        applySpan(spannableString, markers);
         target.setText(spannableString);
     }
 
     private void applySpan(SpannableString spannableString, List<MarkInfo> markers) {
+        for (int i = 0; i < markers.size(); i++) {
+            MarkInfo markInfo = markers.get(i);
+            //check ImageSpan
+            if (markInfo.value != null) {
+                List<Object> spans = appliedSpan.get(markInfo.key);
+                if (spans != null)
+                    for (Object span :
+                            spans) {
+                        spannableString.setSpan(span, markInfo.start, markInfo.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    }
 
+            }
+        }
     }
 
     private void processTextAfterMark(List<MarkInfo> markers) {

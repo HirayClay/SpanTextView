@@ -1,6 +1,7 @@
 package com.app;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.util.ArrayMap;
@@ -9,6 +10,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -244,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                 .textSize(0, 25)
                 .textSize("height", 25)
                 .image("avatar",getResources().getDrawable(R.drawable.girl))
+                .apply("height",new StyleSpan(Typeface.ITALIC))
                 .spanClickListener(new Hook.ClickSpanListener() {
                     @Override
                     public void onSpanClick(int index, String template, String value) {
