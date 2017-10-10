@@ -6,6 +6,10 @@ that is it! I use template in this project like groovy's template.
 # Usage
 
 ```
+ compile 'com.hiray.spantextview:lib:1.0.0'
+```
+
+```
         <com.hirayclay.SpanTextView
             android:id="@+id/span_textview"
             app:spanClick="spanClick"
@@ -14,7 +18,7 @@ that is it! I use template in this project like groovy's template.
             android:layout_height="wrap_content" />
 ```
 
-in your code to control the style:
+control the style with java code:
 ```
         spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
