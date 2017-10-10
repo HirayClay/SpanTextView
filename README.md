@@ -20,7 +20,7 @@ the fuk index.Just set span with  intuitive name !
             android:layout_height="wrap_content" />
 ```
 
-in your code to control the style:
+control the style with java code:
 ```
         spanTextView = (SpanTextView) findViewById(R.id.span_textview);
 
