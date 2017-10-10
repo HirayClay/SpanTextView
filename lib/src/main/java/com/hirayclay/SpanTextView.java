@@ -45,18 +45,18 @@ public class SpanTextView extends AppCompatTextView {
     }
 
 
-    Hook instance;
-    Hook beforeCacheInstance;
+    SpanHelper instance;
+    SpanHelper beforeCacheInstance;
 
-    public Hook hook() {
+    public SpanHelper hook() {
         if (cache) {
             if (instance != null) {
                 return instance;
             }else if (beforeCacheInstance !=null)
                 return instance = beforeCacheInstance;
-            return instance = new Hook(this);
+            return instance = new SpanHelper(this);
         }
-        return beforeCacheInstance = new Hook(this);
+        return beforeCacheInstance = new SpanHelper(this);
     }
 
     public void setTemplateText(String templateText) {

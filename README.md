@@ -7,6 +7,10 @@ the fuk index.Just set span with  intuitive name !
 
 # Usage
 
+```gradle
+        compile 'com.hiray.spantextview:lib:1.0.0'
+```
+
 ```
         <com.hirayclay.SpanTextView
             android:id="@+id/span_textview"

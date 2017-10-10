@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.hirayclay.Hook;
+import com.hirayclay.SpanHelper;
 import com.hirayclay.SpanTextView;
 
 import java.util.Map;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    Hook.ClickSpanListener clickSpanListener = new Hook.ClickSpanListener() {
+    SpanHelper.ClickSpanListener clickSpanListener = new SpanHelper.ClickSpanListener() {
         @Override
         public void onSpanClick(int index, String template, String value) {
             Toast.makeText(MainActivity.this, "click  " + template + " index:" + index + " value:" + value, Toast.LENGTH_SHORT).show();
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         spanTextView = (SpanTextView) findViewById(R.id.span_textview);
         setUpListeners();
-        initDisplay();
+        init();
     }
 
 
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         String key = button.getText().toString();
 
 
-        Hook hook = spanTextView.hook();
+        SpanHelper hook = spanTextView.hook();
 
         hook.bind(binding)
                 .cache(cacheToggle.isChecked())
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initDisplay() {
+    private void init() {
         Map<String, String> binding = new ArrayMap<>();
         binding.put("name", "Alice");
         binding.put("age", "18");
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 .textSize("height", 25)
                 .image("avatar",getResources().getDrawable(R.drawable.girl))
                 .apply("height",new StyleSpan(Typeface.ITALIC))
-                .spanClickListener(new Hook.ClickSpanListener() {
+                .spanClickListener(new SpanHelper.ClickSpanListener() {
                     @Override
                     public void onSpanClick(int index, String template, String value) {
                         Toast.makeText(MainActivity.this, "click  " + template + " index:" + index + " value:" + value, Toast.LENGTH_SHORT).show();

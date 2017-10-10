@@ -14,10 +14,8 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.UnderlineSpan;
-import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.ImageSwitcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +33,7 @@ import java.util.Map;
  *
  * @author CJJ
  */
-public class Hook {
+public class SpanHelper {
     private SpanTextView target;
     private int uniformColor;
     private int[] foregroundColors;
@@ -48,59 +46,58 @@ public class Hook {
     private Map<String, Integer> unProcessedTextSize = new ArrayMap<>();
     private Map<String, Drawable> drawableMap = new ArrayMap<>();
 
-    public Hook(SpanTextView target) {
+    public SpanHelper(SpanTextView target) {
         this.target = target;
         this.uniformColor = target.getCurrentTextColor();
     }
 
     /**
-     * @param c if set true Hook will be single instance,when call {@link SpanTextView#hook()}next
-     *          time ,the older Hook will be returned.If you want reset to default behavior(create new one every time)
+     * @param c if set true SpanHelper will be single instance,when call {@link SpanTextView#hook()}next
+     *          time ,the older SpanHelper will be returned.If you want reset to default behavior(create new one every time)
      *          just call {@link SpanTextView#setCache(boolean)} and set false.
      *          will not created a new one except first call
-     * @return {@link Hook}
+     * @return {@link SpanHelper}
      */
 
-    public Hook cache(boolean c) {
+    public SpanHelper cache(boolean c) {
         this.target.setCache(c);
         return this;
     }
 
-    //createTemplate
-    public Hook template(String template) {
+    //replace the template
+    public SpanHelper template(String template) {
         this.target.setTemplateText(template);
         return this;
     }
 
     //ForegroundSpan
-
     /**
-     * style all the text in same color
+     * style all the text in same color,but you can override it with {@link #spanTextColor(int...)}
      *
-     * @param color
-     * @return
+     * @param color ..
+     * @return ..
      */
-    public Hook uniformColor(@ColorInt int color) {
+    public SpanHelper uniformColor(@ColorInt int color) {
         this.uniformColor = color;
         return this;
     }
 
-    public Hook spanTextColor(int... foregroundSpanColors) {
+    public SpanHelper spanTextColor(int... foregroundSpanColors) {
         this.foregroundColors = foregroundSpanColors;
         return this;
     }
 
-    public Hook underLineSpans(boolean... underlineSpans) {
+    public SpanHelper underLineSpans(boolean... underlineSpans) {
         this.underLineSpans = underlineSpans;
         return this;
     }
 
-    public Hook highLightColor(@ColorInt int highLightColor) {
+    public SpanHelper highLightColor(@ColorInt int highLightColor) {
         this.highLightColor = highLightColor;
         return this;
     }
 
-    public Hook spanClickListener(ClickSpanListener listener) {
+    public SpanHelper spanClickListener(ClickSpanListener listener) {
         this.listener = listener;
         return this;
     }
@@ -109,38 +106,38 @@ public class Hook {
      * set the  textSize of all spans
      *
      * @param textSize unit is "sp"
-     * @return Hook
+     * @return SpanHelper
      */
-    public Hook uniformSpanTextSize(int textSize) {
+    public SpanHelper uniformSpanTextSize(int textSize) {
         this.textSize = sp(textSize);
         return this;
     }
 
-    public Hook textSize(int index, int textSize) {
+    public SpanHelper textSize(int index, int textSize) {
         textSizeMap.put(index, sp(textSize));
         return this;
     }
 
-    public Hook textSize(String key, int textSize) {
+    public SpanHelper textSize(String key, int textSize) {
         unProcessedTextSize.put(key, sp(textSize));
         return this;
     }
 
-    public Hook bind(Map<String, String> binding) {
+    public SpanHelper bind(Map<String, String> binding) {
         this.binding = binding;
         return this;
     }
 
-    public Hook image(String key, Drawable drawable) {
+    public SpanHelper image(String key, Drawable drawable) {
         drawableMap.put(key, drawable);
         return this;
     }
 
     /**
      * @param drawableMap the key and the corresponding drawable
-     * @return
+     * @return ..
      */
-    public Hook images(Map<String, Drawable> drawableMap) {
+    public SpanHelper images(Map<String, Drawable> drawableMap) {
         this.drawableMap.putAll(drawableMap);
         return this;
     }
@@ -148,9 +145,9 @@ public class Hook {
 
     /**
      * @param drawableRes the key and the drawable resource id
-     * @return
+     * @return ..
      */
-    public Hook imageRes(Map<String, Integer> drawableRes) {
+    public SpanHelper imageRes(Map<String, Integer> drawableRes) {
         drawableMap.putAll(wrap(drawableRes));
         return this;
     }
@@ -175,9 +172,9 @@ public class Hook {
     /**
      * @param key  the key in template string
      * @param span your Span instance you want to be applied on the key
-     * @return Hook
+     * @return SpanHelper
      */
-    public Hook apply(String key, Object span) {
+    public SpanHelper apply(String key, Object span) {
         List<Object> list = appliedSpan.get(key);
         if (list != null)
             list.add(span);
